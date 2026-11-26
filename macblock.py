@@ -76,7 +76,7 @@ DEFAULT_CONFIG = {
     "update_hours": 24,
     "lists": [
         "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
-        "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt",
+        "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
         "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt",
     ],
     "review_score": 3,       # score at which a name enters the review queue
@@ -110,6 +110,13 @@ def log(*a):
             print(line, f"(log file: {e})", file=sys.stderr, flush=True)
 
 
+# lists that moved; existing config.json files still name the old address
+MOVED_LISTS = {
+    "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt":
+    "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
+}
+
+
 def load_config():
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG.exists():
@@ -120,6 +127,7 @@ def load_config():
             CONFIG.write_text(json.dumps(DEFAULT_CONFIG, indent=2))
         except PermissionError:
             pass                    # not root: run on the defaults
+    cfg["lists"] = [MOVED_LISTS.get(u, u) for u in cfg["lists"]]
     return cfg
 
 
