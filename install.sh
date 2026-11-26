@@ -69,12 +69,15 @@ osacompile -o "/Applications/Toggle macblock.app" \
   -e 'end try'
 
 BAR="/Applications/Macblock Menu.app"
+pkill -x MacblockMenu 2>/dev/null || true      # so the new build is what opens
 if xcrun --find swiftc >/dev/null 2>&1; then
   mkdir -p "$BAR/Contents/MacOS"
   cp menubar/Info.plist "$BAR/Contents/"
   if ! xcrun swiftc -O menubar/main.swift -o "$BAR/Contents/MacOS/MacblockMenu"; then
     echo "   (menu bar app did not build - everything else works)"
     rm -rf "$BAR"
+  else
+    codesign --force --sign - "$BAR"
   fi
 else
   echo "   (no Swift compiler - skipping the menu bar app)"

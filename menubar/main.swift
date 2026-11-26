@@ -19,6 +19,35 @@ final class Menu: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item.menu = menu
         refresh()
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.refresh() }
+        DispatchQueue.main.async { self.panel() }
+    }
+
+    // opening the app again shows the panel, in case the menu bar icon is hidden
+    func applicationShouldHandleReopen(_ app: NSApplication, hasVisibleWindows: Bool) -> Bool {
+        DispatchQueue.main.async { self.panel() }
+        return false
+    }
+
+    var showing = false
+
+    func panel() {
+        if showing { return }
+        showing = true
+        defer { showing = false }
+        refresh()
+        let alert = NSAlert()
+        alert.messageText = !enabled ? "macblock is OFF" : pausedUntil != nil ? "macblock is paused" : "macblock is ON"
+        alert.informativeText = "\(blocked) lookups blocked."
+        var commands = ["dns toggle"]
+        alert.addButton(withTitle: enabled ? "Turn off" : "Turn on")
+        if enabled {
+            alert.addButton(withTitle: pausedUntil != nil ? "Resume" : "Pause 10 minutes")
+            commands.append(pausedUntil != nil ? "resume" : "pause 10")
+        }
+        alert.addButton(withTitle: "Close")
+        NSApp.activate(ignoringOtherApps: true)
+        let choice = alert.runModal().rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
+        if commands.indices.contains(choice) { admin(commands[choice]) }
     }
 
     var enabled: Bool { FileManager.default.fileExists(atPath: home + "/enabled") }

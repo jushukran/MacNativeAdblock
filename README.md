@@ -21,7 +21,7 @@ You need `python3`. If it's missing, macOS will offer to install the Command Lin
 | `macblock test foo.com` | What it would do with a name, and why |
 | `sudo macblock update` | Pulls the lists now (otherwise every 24h) |
 
-**Macblock Menu** (menu bar) shows the state and blocked count, pauses, toggles, and allows recently blocked names. It is built at install time if a Swift compiler is present. To start it at login, add it under System Settings → General → Login Items. **Toggle macblock** is a double-click on/off app.
+**Macblock Menu** (menu bar) shows the state and blocked count, pauses, toggles, and allows recently blocked names. Opening the app also shows a small on/off panel. It is built at install time if a Swift compiler is present. To start it at login, add it under System Settings → General → Login Items. **Toggle macblock** is a double-click on/off app.
 
 ## How it stays out of the way
 - **Fails open.** `guard.sh` runs as its own service in plain shell. If macblock stops answering (about 10-20 seconds), your previous DNS is restored; when it recovers, blocking resumes. If everything else is broken: `sudo /usr/local/macblock/guard.sh off`.
